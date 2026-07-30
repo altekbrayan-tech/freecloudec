@@ -1,6 +1,6 @@
 FROM node:20-slim
 
-# Instalar dependencias del sistema necesarias
+# Instalar dependencias necesarias del sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
@@ -10,16 +10,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos de dependencias
-COPY package*.json ./
-
-# Instalar dependencias de Node
-RUN npm ci --only=production || npm install
-
-# Copiar el resto del código del repositorio
+# Copiar todo el código fuente al contenedor
 COPY . .
 
-# Variables de entorno por defecto
+# Instalar dependencias directamente desde package.json
+RUN npm install --omit=dev
+
+# Variables de entorno
 ENV HOST=0.0.0.0
 ENV PORT=8082
 ENV ALLOW_REMOTE_ADMIN=true
