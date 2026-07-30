@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  free-claude-code:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: free-claude-code
+    restart: always
+    environment:
+      - HOST=0.0.0.0
+      - PORT=8082
+      - ALLOW_REMOTE_ADMIN=true
+      - FCC_ALLOW_REMOTE_ADMIN=true
+    networks:
+      - dokploy-network
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.fcc.rule=Host(`fcc.clouddec.com`)"
+      - "traefik.http.routers.fcc.entrypoints=websecure"
+      - "traefik.http.routers.fcc.tls=true"
+      
+      # Headers para bypass/panel de administración a través de Traefik
+      - "traefik.http.middlewares.fcc-headers.headers.customrequestheaders.Host=localhost"
+      - "traefik.http.middlewares.fcc-headers.headers.customrequestheaders.X-Real-IP=127.0.0.1"
+      - "traefik.http.routers.fcc.middlewares=fcc-headers"
+      
+      - "traefik.http.services.fcc.loadbalancer.server.port=8082"
+
+networks:
+  dokploy-network:
+    external: true
