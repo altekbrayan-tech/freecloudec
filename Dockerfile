@@ -1,22 +1,20 @@
 FROM node:20-slim
 
-# Instalar dependencias necesarias del sistema
 RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     curl \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar todo el código fuente al contenedor
-COPY . .
+# Copia desde la subcarpeta correspondiente (ajusta 'src' al nombre de tu carpeta)
+COPY src/package*.json ./
 
-# Instalar dependencias directamente desde package.json
 RUN npm install --omit=dev
 
-# Variables de entorno
+COPY src/ ./
+
 ENV HOST=0.0.0.0
 ENV PORT=8082
 ENV ALLOW_REMOTE_ADMIN=true
