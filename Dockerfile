@@ -8,12 +8,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copia desde la subcarpeta correspondiente (ajusta 'src' al nombre de tu carpeta)
-COPY src/package*.json ./
+# Copiamos todo el contexto del repositorio primero
+COPY . .
 
+# Imprimimos la estructura para ver exactamente dónde está package.json en los logs de Dokploy
+RUN echo "=== Directorio raíz (/app) ===" && ls -la /app
+
+# Si package.json está en la raíz, npm install funcionará. 
+# Si está dentro de una subcarpeta, ajústalo según lo que imprima el 'ls -la' superior.
 RUN npm install --omit=dev
-
-COPY src/ ./
 
 ENV HOST=0.0.0.0
 ENV PORT=8082
